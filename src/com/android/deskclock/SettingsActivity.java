@@ -60,8 +60,6 @@ public class SettingsActivity extends PreferenceActivity
             "auto_silence";
     static final String KEY_DIGITAL_CLOCK_COLOR =
             "digital_clock_color";
-    static final String KEY_HIDE_STATUS_BAR_ICON =
-            "hide_status_bar_icon";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +74,6 @@ public class SettingsActivity extends PreferenceActivity
             ringtone.setAlert(alert);
         }
         ringtone.setChangeDefault();
-
-        Preference hideStatusbarIcon = (CheckBoxPreference) findPreference(KEY_HIDE_STATUS_BAR_ICON);
-        hideStatusbarIcon.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -121,19 +116,15 @@ public class SettingsActivity extends PreferenceActivity
             final ListPreference listPref = (ListPreference) pref;
             String delay = (String) newValue;
             updateAutoSnoozeSummary(listPref, delay);
-        } else if (KEY_HIDE_STATUS_BAR_ICON.equals(pref.getKey())) {
-            // Check if any alarms are active. If yes and
-            // we allow showing the alarm icon, the icon will be shown.
-            Alarms.setNextAlert(getApplicationContext(), (Boolean) newValue);
         } else if (KEY_FLIP_ACTION.equals(pref.getKey())) {
-            final ListPreference listPref = (ListPreference) pref;
-            String action = (String) newValue;
-            updateFlipActionSummary(listPref, action);
-        } else if (KEY_SHAKE_ACTION.equals(pref.getKey())) {
-            final ListPreference listPref = (ListPreference) pref;
-            String action = (String) newValue;
-            updateShakeActionSummary(listPref, action);
-        } else if (KEY_DIGITAL_CLOCK_COLOR.equals(pref.getKey())) {
+			final ListPreference listPref = (ListPreference) pref;
+			String action = (String) newValue;
+			updateFlipActionSummary(listPref, action);
+		} else if (KEY_SHAKE_ACTION.equals(pref.getKey())) {
+			final ListPreference listPref = (ListPreference) pref;
+			String action = (String) newValue;
+			updateShakeActionSummary(listPref, action);
+		} else if (KEY_DIGITAL_CLOCK_COLOR.equals(pref.getKey())) {
             AppWidgetManager widgetManager = AppWidgetManager.getInstance(this);
             ComponentName widgetComponent = new ComponentName(this, DigitalAppWidgetProvider.class);
             int[] widgetIds = widgetManager.getAppWidgetIds(widgetComponent);

@@ -16,6 +16,8 @@
 
 package com.android.deskclock;
 
+import java.util.Locale;
+
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -29,7 +31,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.preference.RingtonePreference;
 import android.provider.Settings;
 
 import net.margaritov.preference.colorpicker.ColorPickerPreference;
@@ -45,6 +46,8 @@ public class SettingsActivity extends PreferenceActivity
 
     private static final String KEY_ALARM_IN_SILENT_MODE =
             "alarm_in_silent_mode";
+    static final String KEY_SHOW_STATUS_BAR_ICON =
+            "show_status_bar_icon";
     static final String KEY_ALARM_SNOOZE =
             "snooze_duration";
 	static final String KEY_FLIP_ACTION = 
@@ -117,14 +120,18 @@ public class SettingsActivity extends PreferenceActivity
             String delay = (String) newValue;
             updateAutoSnoozeSummary(listPref, delay);
         } else if (KEY_FLIP_ACTION.equals(pref.getKey())) {
-			final ListPreference listPref = (ListPreference) pref;
-			String action = (String) newValue;
-			updateFlipActionSummary(listPref, action);
-		} else if (KEY_SHAKE_ACTION.equals(pref.getKey())) {
-			final ListPreference listPref = (ListPreference) pref;
-			String action = (String) newValue;
-			updateShakeActionSummary(listPref, action);
-		} else if (KEY_DIGITAL_CLOCK_COLOR.equals(pref.getKey())) {
+            final ListPreference listPref = (ListPreference) pref;
+            String action = (String) newValue;
+            updateFlipActionSummary(listPref, action);
+        } else if (KEY_SHAKE_ACTION.equals(pref.getKey())) {
+            final ListPreference listPref = (ListPreference) pref;
+            String action = (String) newValue;
+            updateShakeActionSummary(listPref, action);
+      } else if (KEY_SHOW_STATUS_BAR_ICON.equals(pref.getKey())) {
+            // Check if any alarms are active. If yes and
+            // we allow showing the alarm icon, the icon will be shown.
+            Alarms.updateStatusBarIcon(getApplicationContext(), (Boolean) newValue);
+      } else if (KEY_DIGITAL_CLOCK_COLOR.equals(pref.getKey())) {
             AppWidgetManager widgetManager = AppWidgetManager.getInstance(this);
             ComponentName widgetComponent = new ComponentName(this, DigitalAppWidgetProvider.class);
             int[] widgetIds = widgetManager.getAppWidgetIds(widgetComponent);
@@ -177,18 +184,20 @@ public class SettingsActivity extends PreferenceActivity
         updateAutoSnoozeSummary(listPref, delay);
         listPref.setOnPreferenceChangeListener(this);
 
-		listPref = (ListPreference) findPreference(KEY_FLIP_ACTION);
-		String action = listPref.getValue();
-		updateFlipActionSummary(listPref, action);
-		listPref.setOnPreferenceChangeListener(this);
+        listPref = (ListPreference) findPreference(KEY_FLIP_ACTION);
+        String action = listPref.getValue();
+        updateFlipActionSummary(listPref, action);
+        listPref.setOnPreferenceChangeListener(this);
 
-		listPref = (ListPreference) findPreference(KEY_SHAKE_ACTION);
-		String shake = listPref.getValue();
-		updateShakeActionSummary(listPref, shake);
-		listPref.setOnPreferenceChangeListener(this);
-
+        listPref = (ListPreference) findPreference(KEY_SHAKE_ACTION);
+        String shake = listPref.getValue();
+        updateShakeActionSummary(listPref, shake);
+        listPref.setOnPreferenceChangeListener(this);
 
         ColorPickerPreference clockColor = (ColorPickerPreference) findPreference(KEY_DIGITAL_CLOCK_COLOR);
         clockColor.setOnPreferenceChangeListener(this);
+
+        CheckBoxPreference hideStatusbarIcon = (CheckBoxPreference) findPreference(KEY_SHOW_STATUS_BAR_ICON);
+        hideStatusbarIcon.setOnPreferenceChangeListener(this);
     }
 }

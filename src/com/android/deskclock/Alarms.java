@@ -163,11 +163,10 @@ public class Alarms {
         values.put(Alarm.Columns.DAYS_OF_WEEK, alarm.daysOfWeek.getCoded());
         values.put(Alarm.Columns.VIBRATE, alarm.vibrate);
         values.put(Alarm.Columns.MESSAGE, alarm.label);
-
         // A null alert Uri indicates a silent alarm.
         values.put(Alarm.Columns.ALERT, alarm.alert == null ? ALARM_ALERT_SILENT
                 : alarm.alert.toString());
-
+        values.put(Alarm.Columns.TYPE, alarm.type);
         values.put(Alarm.Columns.INCVOL, alarm.incvol);
 
         return values;

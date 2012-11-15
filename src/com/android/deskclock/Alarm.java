@@ -57,6 +57,7 @@ public final class Alarm implements Parcelable {
         p.writeInt(vibrate ? 1 : 0);
         p.writeString(label);
         p.writeParcelable(alert, flags);
+        p.writeString(type);
         p.writeInt(silent ? 1 : 0);
         p.writeInt(incvol ? 1 : 0);
     }
@@ -118,6 +119,13 @@ public final class Alarm implements Parcelable {
         public static final String MESSAGE = "message";
 
         /**
+         * Type of alert
+         * Note: not currently used
+         * <P>Type: STRING</P>
+         */
+        public static final String TYPE = "type";
+
+        /**
          * Audio alert to play when alarm triggers
          * <P>Type: STRING</P>
          */
@@ -140,7 +148,7 @@ public final class Alarm implements Parcelable {
 
         static final String[] ALARM_QUERY_COLUMNS = {
             _ID, HOUR, MINUTES, DAYS_OF_WEEK, ALARM_TIME,
-            ENABLED, VIBRATE, MESSAGE, ALERT, INCVOL };
+            ENABLED, VIBRATE, MESSAGE, ALERT, INCVOL, TYPE };
 
         /**
          * These save calls to cursor.getColumnIndexOrThrow()
@@ -156,6 +164,7 @@ public final class Alarm implements Parcelable {
         public static final int ALARM_MESSAGE_INDEX = 7;
         public static final int ALARM_ALERT_INDEX = 8;
         public static final int ALARM_INCVOL_INDEX = 9;
+        public static final int ALARM_TYPE_INDEX = 10;
     }
     //////////////////////////////
     // End column definitions
@@ -170,6 +179,7 @@ public final class Alarm implements Parcelable {
     public long       time;
     public boolean    vibrate;
     public String     label;
+    public String     type;
     public Uri        alert;
     public boolean    silent;
     public boolean    incvol;
@@ -201,6 +211,12 @@ public final class Alarm implements Parcelable {
                         RingtoneManager.TYPE_ALARM);
             }
         }
+        if (!c.isNull(Columns.ALARM_TYPE_INDEX)) {
+            type = c.getString(Columns.ALARM_TYPE_INDEX);
+        }
+        else {
+            type = "ringtone";
+        }
         incvol = c.getInt(Columns.ALARM_INCVOL_INDEX) == 1;
     }
 
@@ -214,6 +230,7 @@ public final class Alarm implements Parcelable {
         vibrate = p.readInt() == 1;
         label = p.readString();
         alert = (Uri) p.readParcelable(null);
+        type = p.readString();
         silent = p.readInt() == 1;
         incvol = p.readInt() == 1;
     }
@@ -229,6 +246,7 @@ public final class Alarm implements Parcelable {
         daysOfWeek = new DaysOfWeek(0);
         alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         incvol = false;
+        type = "ringtone";
     }
 
     public String getLabelOrDefault(Context context) {
